@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問題練習サイト</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .setup-section {
+            margin-bottom: 30px;
+        }
+
+        .setup-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .question-section {
+            display: none;
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .question-number {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .progress {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .question-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .question-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .answer-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .answer-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .answer-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .answer-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .answer-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .answer-btn.selected {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .next-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #218838;
+        }
+
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+
+        .results-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .wrong-questions {
+            margin-top: 20px;
+        }
+
+        .wrong-questions h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+
+        .wrong-question-item {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .restart-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        .restart-btn:hover {
+            background: #c82333;
+        }
+
+        .perfect-score {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .perfect-score h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .perfect-score p {
+            color: #155724;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>問題練習サイト</h1>
+            <p>運転免許試験の練習問題に挑戦しましょう</p>
+        </div>
+
+        <div class="content">
+            <!-- セットアップ画面 -->
+            <div id="setup-section" class="setup-section">
+                <h2>問題設定</h2>
+                
+                <div class="form-group">
+                    <label for="question-set">問題集を選択してください：</label>
+                    <select id="question-set">
+                        <option value="">選択してください</option>
+                        <option value="1">集検1問題</option>
+                        <option value="2">集検2問題</option>
+                        <option value="3">集検3問題</option>
+                        <option value="4">集検4問題</option>
+                        <option value="5">集検5問題</option>
+                        <option value="6">集検6問題</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="mode">モードを選択してください：</label>
+                    <select id="mode">
+                        <option value="">選択してください</option>
+                        <option value="practice">練習モード（即座に正解表示）</option>
+                        <option value="exam">試験モード（最後に結果表示）</option>
+                    </select>
+                </div>
+
+                <button id="start-btn" class="btn" disabled>開始</button>
+            </div>
+
+            <!-- 問題表示画面 -->
+            <div id="question-section" class="question-section">
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-number" id="question-number">問題 1</div>
+                        <div class="progress" id="progress">1 / 25</div>
+                    </div>
+                    
+                    <div class="question-text" id="question-text">
+                        問題文がここに表示されます
+                    </div>
+                    
+                    <div class="question-image" id="question-image">
+                        <!-- 画像があればここに表示 -->
+                    </div>
+                    
+                    <div class="answer-options">
+                        <button class="answer-btn" data-answer="〇">〇</button>
+                        <button class="answer-btn" data-answer="×">×</button>
+                    </div>
+                    
+                    <div class="feedback hidden" id="feedback"></div>
+                    
+                    <button class="next-btn hidden" id="next-btn">次の問題へ</button>
+                </div>
+            </div>
+
+            <!-- 結果表示画面 -->
+            <div id="results-section" class="results-section">
+                <div class="results-summary">
+                    <div class="score" id="score">正解率: 80%</div>
+                    <p>お疲れさまでした！</p>
+                    
+                    <div class="wrong-questions" id="wrong-questions">
+                        <h3>間違えた問題</h3>
+                        <div id="wrong-questions-list"></div>
+                    </div>
+                    
+                    <div class="perfect-score" id="perfect-score" style="display: none;">
+                        <h3>🎉 完璧です！</h3>
+                        <p>すべての問題に正解しました！</p>
+                        <p>3秒後にTOP画面に戻ります...</p>
+                        <button class="btn" id="back-to-top-btn" style="margin-top: 15px;">すぐにTOPに戻る</button>
+                    </div>
+                    
+                    <button class="restart-btn" id="restart-btn">間違えた問題を再挑戦</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 問題データを直接定義
+        const questionData = {
+
+        };
+
+        class QuizApp {
+            constructor() {
+                this.questions = [];
+                this.currentQuestionIndex = 0;
+                this.answers = [];
+                this.wrongAnswers = [];
+                this.mode = '';
+                this.questionSet = '';
+                this.isReviewMode = false;
+                
+                this.initializeElements();
+                this.bindEvents();
+            }
+
+            initializeElements() {
+                this.setupSection = document.getElementById('setup-section');
+                this.questionSection = document.getElementById('question-section');
+                this.resultsSection = document.getElementById('results-section');
+                
+                this.questionSetSelect = document.getElementById('question-set');
+                this.modeSelect = document.getElementById('mode');
+                this.startBtn = document.getElementById('start-btn');
+                
+                this.questionNumber = document.getElementById('question-number');
+                this.progress = document.getElementById('progress');
+                this.questionText = document.getElementById('question-text');
+                this.questionImage = document.getElementById('question-image');
+                this.answerBtns = document.querySelectorAll('.answer-btn');
+                this.feedback = document.getElementById('feedback');
+                this.nextBtn = document.getElementById('next-btn');
+                
+                this.score = document.getElementById('score');
+                this.wrongQuestionsList = document.getElementById('wrong-questions-list');
+                this.restartBtn = document.getElementById('restart-btn');
+            }
+
+            bindEvents() {
+                this.questionSetSelect.addEventListener('change', () => this.validateForm());
+                this.modeSelect.addEventListener('change', () => this.validateForm());
+                this.startBtn.addEventListener('click', () => this.startQuiz());
+                
+                this.answerBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => this.selectAnswer(e.target));
+                });
+                
+                this.nextBtn.addEventListener('click', () => this.nextQuestion());
+                this.restartBtn.addEventListener('click', () => this.restartWrongQuestions());
+                
+                // 手動でTOPに戻るボタンのイベントリスナー
+                document.addEventListener('click', (e) => {
+                    if (e.target.id === 'back-to-top-btn') {
+                        this.backToTop();
+                    }
+                });
+            }
+
+            validateForm() {
+                const isValid = this.questionSetSelect.value && this.modeSelect.value;
+                this.startBtn.disabled = !isValid;
+            }
+
+            async startQuiz() {
+                this.questionSet = this.questionSetSelect.value;
+                this.mode = this.modeSelect.value;
+                this.isReviewMode = false;
+                
+                try {
+                    await this.loadQuestions();
+                    this.setupSection.style.display = 'none';
+                    this.questionSection.style.display = 'block';
+                    this.showQuestion();
+                } catch (error) {
+                    alert('問題の読み込みに失敗しました: ' + error.message);
+                }
+            }
+
+            async loadQuestions() {
+                try {
+                    // JSONファイルから読み込み
+                    const response = await fetch(`assets/data/${this.questionSet}.json`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    this.questions = await response.json();
+                } catch (error) {
+                    throw new Error(`問題ファイルの読み込みに失敗しました: ${error.message}`);
+                }
+            }
+
+            showQuestion() {
+                const question = this.questions[this.currentQuestionIndex];
+                
+                this.questionNumber.textContent = `問題 ${question.number}`;
+                this.progress.textContent = `${this.currentQuestionIndex + 1} / ${this.questions.length}`;
+                this.questionText.textContent = question.question;
+                
+                // 画像の表示
+                this.showQuestionImage(question.number);
+                
+                // ボタンの状態をリセット
+                this.answerBtns.forEach(btn => {
+                    btn.classList.remove('selected', 'correct', 'incorrect');
+                    btn.disabled = false;
+                });
+                
+                this.feedback.classList.add('hidden');
+                this.nextBtn.classList.add('hidden');
+            }
+
+            showQuestionImage(questionNumber) {
+                const imagePath = `assets/images/${this.questionSet}-${questionNumber}.png`;
+                
+                // 画像ファイルの存在確認（簡易版）
+                fetch(imagePath, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            this.questionImage.innerHTML = `<img src="${imagePath}" alt="問題画像">`;
+                        } else {
+                            this.questionImage.innerHTML = '';
+                        }
+                    })
+                    .catch(() => {
+                        this.questionImage.innerHTML = '';
+                    });
+            }
+
+            selectAnswer(selectedBtn) {
+                const selectedAnswer = selectedBtn.dataset.answer;
+                const question = this.questions[this.currentQuestionIndex];
+                const isCorrect = selectedAnswer === question.answer;
+                
+                // 選択状態を設定
+                this.answerBtns.forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.disabled = true;
+                });
+                selectedBtn.classList.add('selected');
+                
+                // 正解を表示
+                this.answerBtns.forEach(btn => {
+                    if (btn.dataset.answer === question.answer) {
+                        btn.classList.add('correct');
+                    } else if (btn.dataset.answer === selectedAnswer && !isCorrect) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+                
+                // 回答を記録
+                this.answers.push({
+                    questionNumber: question.number,
+                    selectedAnswer: selectedAnswer,
+                    correctAnswer: question.answer,
+                    isCorrect: isCorrect
+                });
+                
+                if (!isCorrect) {
+                    this.wrongAnswers.push(question);
+                }
+                
+                // 練習モードの場合は即座にフィードバックを表示
+                if (this.mode === 'practice') {
+                    this.showFeedback(isCorrect);
+                    this.nextBtn.classList.remove('hidden');
+                } else {
+                    // 試験モードの場合は次の問題へ
+                    setTimeout(() => {
+                        this.nextQuestion();
+                    }, 1000);
+                }
+            }
+
+            showFeedback(isCorrect) {
+                this.feedback.textContent = isCorrect ? '正解です！' : '不正解です。';
+                this.feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+                this.feedback.classList.remove('hidden');
+            }
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                
+                if (this.currentQuestionIndex >= this.questions.length) {
+                    this.showResults();
+                } else {
+                    this.showQuestion();
+                }
+            }
+
+            showResults() {
+                const correctCount = this.answers.filter(a => a.isCorrect).length;
+                const totalCount = this.answers.length;
+                const percentage = Math.round((correctCount / totalCount) * 100);
+                
+                this.score.textContent = `正解率: ${percentage}% (${correctCount}/${totalCount})`;
+                
+                // 間違えた問題の表示
+                if (this.wrongAnswers.length > 0) {
+                    this.wrongQuestionsList.innerHTML = this.wrongAnswers
+                        .map(q => `<div class="wrong-question-item">問題${q.number}: ${q.question}</div>`)
+                        .join('');
+                    document.getElementById('wrong-questions').style.display = 'block';
+                    document.getElementById('perfect-score').style.display = 'none';
+                } else {
+                    document.getElementById('wrong-questions').style.display = 'none';
+                    document.getElementById('perfect-score').style.display = 'block';
+                    // 間違えた問題がない場合は、3秒後にTOP画面に戻る
+                    setTimeout(() => {
+                        this.backToTop();
+                    }, 3000);
+                }
+                
+                this.questionSection.style.display = 'none';
+                this.resultsSection.style.display = 'block';
+            }
+
+            backToTop() {
+                // 状態をリセット
+                this.questions = [];
+                this.currentQuestionIndex = 0;
+                this.answers = [];
+                this.wrongAnswers = [];
+                this.mode = '';
+                this.questionSet = '';
+                this.isReviewMode = false;
+                
+                // フォームをリセット
+                this.questionSetSelect.value = '';
+                this.modeSelect.value = '';
+                this.startBtn.disabled = true;
+                
+                // 画面を切り替え
+                this.resultsSection.style.display = 'none';
+                this.setupSection.style.display = 'block';
+            }
+
+            restartWrongQuestions() {
+                if (this.wrongAnswers.length === 0) {
+                    alert('間違えた問題はありません。');
+                    return;
+                }
+                
+                this.questions = [...this.wrongAnswers];
+                this.currentQuestionIndex = 0;
+                this.answers = [];
+                this.wrongAnswers = [];
+                this.isReviewMode = true;
+                
+                this.resultsSection.style.display = 'none';
+                this.questionSection.style.display = 'block';
+                this.showQuestion();
+            }
+        }
+
+        // アプリケーションの初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            new QuizApp();
+        });
+    </script>
+</body>
+</html> 
